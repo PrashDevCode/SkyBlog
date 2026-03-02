@@ -1,0 +1,76 @@
+<!-- Reading Progress Bar -->
+<div class="reading-progress" id="progressBar"></div>
+
+<!-- Navigation -->
+<nav class="fixed w-full z-50 transition-all duration-300" id="navbar">
+    <div class="glass-effect bg-white/80 backdrop-blur-md border-b border-sky-100/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo -->
+                <a href="/" class="flex-shrink-0 flex items-center">
+                    <div class="w-10 h-10 rounded-full sky-gradient flex items-center justify-center text-white font-bold text-xl mr-3 shadow-lg shadow-sky-500/30">
+                        <i class="fas fa-cloud"></i>
+                    </div>
+                    <span class="font-serif text-2xl font-bold text-slate-800">Sky</span>
+                    <span class="font-serif text-2xl font-bold text-sky-500">Blog</span>
+                </a>
+
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="/" class="nav-link text-slate-600 hover:text-sky-600 font-medium">Home</a>
+                    <a href="#featured" class="nav-link text-slate-600 hover:text-sky-600 font-medium">Featured</a>
+                    <a href="#categories" class="nav-link text-slate-600 hover:text-sky-600 font-medium">Topics</a>
+                    <a href="#latest" class="nav-link text-slate-600 hover:text-sky-600 font-medium">Fresh</a>
+                    <a href="#newsletter" class="nav-link text-slate-600 hover:text-sky-600 font-medium">Subscribe</a>
+                </div>
+
+                <!-- Right Side Actions -->
+                <div class="flex items-center space-x-4">
+                    <!-- Search -->
+                    <div class="flex items-center">
+                        <input type="text" id="searchInput" placeholder="Search the skies..." 
+                            class="search-expand bg-sky-50 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 text-slate-700">
+                        <button onclick="toggleSearch()" class="p-2 text-slate-600 hover:text-sky-600 transition">
+                            <i class="fas fa-search text-lg"></i>
+                        </button>
+                    </div>
+
+                    <!-- Auth Buttons (Desktop) -->
+                    <div class="hidden md:flex items-center space-x-3">
+                        <a href="/login" class="px-4 py-2 text-slate-600 hover:text-sky-600 font-medium transition">
+                            Sign In
+                        </a>
+                        <a href="/signup" class="px-6 py-2 sky-gradient text-white rounded-full hover:shadow-lg hover:shadow-sky-500/30 transition transform hover:scale-105 font-medium">
+                            Get Started
+                        </a>
+                    </div>
+
+                    <!-- Mobile Menu Button -->
+                    <button onclick="toggleMobileMenu()" class="md:hidden p-2 text-slate-600">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="hidden md:hidden bg-white/95 backdrop-blur-md border-t border-sky-100">
+        <div class="px-4 pt-2 pb-6 space-y-2">
+            <a href="/" class="block px-3 py-2 text-slate-700 hover:bg-sky-50 rounded-md">Home</a>
+            <a href="#featured" class="block px-3 py-2 text-slate-700 hover:bg-sky-50 rounded-md">Featured</a>
+            <a href="#categories" class="block px-3 py-2 text-slate-700 hover:bg-sky-50 rounded-md">Topics</a>
+            <a href="#latest" class="block px-3 py-2 text-slate-700 hover:bg-sky-50 rounded-md">Fresh</a>
+            
+            <!-- Mobile Auth Buttons -->
+            <div class="pt-4 space-y-2 border-t border-slate-100 mt-4">
+                <a href="/login" class="block w-full px-3 py-3 text-center text-slate-700 hover:bg-sky-50 rounded-md font-medium">
+                    Sign In
+                </a>
+                <a href="/signup" class="block w-full px-3 py-3 text-center sky-gradient text-white rounded-xl font-medium">
+                    Get Started — It's Free
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>

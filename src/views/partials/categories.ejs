@@ -1,0 +1,34 @@
+<!-- Categories Section -->
+<section id="categories" class="py-20 bg-white relative overflow-hidden">
+    <!-- Background clouds -->
+    <div class="absolute top-0 right-0 w-64 h-64 bg-sky-100/50 rounded-full blur-3xl"></div>
+    <div class="absolute bottom-0 left-0 w-96 h-96 bg-orange-100/30 rounded-full blur-3xl"></div>
+    
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="text-center mb-12">
+            <h2 class="font-serif text-4xl font-bold text-slate-800 mb-4">Explore the Atmosphere</h2>
+            <p class="text-slate-600 max-w-2xl mx-auto">Dive into our curated collections spanning every layer of thought and creativity.</p>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            <% const categories = [
+                {name: 'Technology', icon: 'fa-rocket', color: 'bg-sky-100 text-sky-600', count: '234'},
+                {name: 'Design', icon: 'fa-palette', color: 'bg-purple-100 text-purple-600', count: '189'},
+                {name: 'Business', icon: 'fa-briefcase', color: 'bg-blue-100 text-blue-600', count: '156'},
+                {name: 'Lifestyle', icon: 'fa-sun', color: 'bg-orange-100 text-orange-600', count: '142'},
+                {name: 'Travel', icon: 'fa-plane', color: 'bg-teal-100 text-teal-600', count: '98'},
+                {name: 'Culture', icon: 'fa-book', color: 'bg-indigo-100 text-indigo-600', count: '87'}
+            ] %>
+            
+            <% categories.forEach(cat => { %>
+            <div class="category-pill group cursor-pointer bg-slate-50 rounded-2xl p-6 text-center hover:bg-white hover:shadow-xl border border-transparent hover:border-sky-100 transition">
+                <div class="w-14 h-14 mx-auto rounded-full <%= cat.color %> flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition shadow-sm">
+                    <i class="fas <%= cat.icon %>"></i>
+                </div>
+                <h3 class="font-semibold text-slate-800 mb-1"><%= cat.name %></h3>
+                <p class="text-sm text-slate-500"><%= cat.count %> stories</p>
+            </div>
+            <% }) %>
+        </div>
+    </div>
+</section>
