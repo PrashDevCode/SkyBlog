@@ -14,7 +14,9 @@
       <% } %>
       <h1 class="text-4xl md:text-5xl font-bold mt-2 mb-4 leading-tight"><%= blog.title %></h1>
       <div class="flex items-center gap-3 text-sm text-gray-400">
-        <span><%= blog.author?.fullName || 'Anonymous' %></span>
+        <a href="/user/profile/<%= blog.author?._id %>" class="hover:text-black transition">
+          <%= blog.author?.fullName || 'Anonymous' %>
+        </a>
         <span>·</span>
         <span><%= new Date(blog.createdAt).toDateString() %></span>
         <% if (blog.status === 'draft') { %>
@@ -39,16 +41,16 @@
 
     <!-- Tags -->
     <% if (blog.tags && blog.tags.length > 0) { %>
-      <div class="mt-12 flex flex-wrap gap-2">
+      <div class="mt-10 flex flex-wrap gap-2">
         <% blog.tags.forEach(tag => { %>
           <span class="text-xs px-3 py-1 border border-gray-200 rounded-full text-gray-500">#<%= tag %></span>
         <% }) %>
       </div>
     <% } %>
 
-    <!-- Author Actions (only if logged in user is the author) -->
+    <!-- Author Actions -->
     <% if (locals.user && blog.author && user._id?.toString() === blog.author._id?.toString()) { %>
-      <div class="mt-12 flex gap-4 pt-8 border-t border-gray-200">
+      <div class="mt-10 flex gap-4 pt-8 border-t border-gray-200">
         <a href="/blog/<%= blog._id %>/edit"
           class="px-5 py-2 border border-black text-sm rounded hover:bg-black hover:text-white transition">
           Edit Post
@@ -63,8 +65,89 @@
       </div>
     <% } %>
 
+    <!-- COMMENTS SECTION -->
+    <div id="comments" class="mt-16 pt-10 border-t border-gray-200">
+
+      <h2 class="text-xl font-bold mb-8">
+        Comments <span class="text-gray-400 font-normal text-base">(<%= comments.length %>)</span>
+      </h2>
+
+      <!-- Add Comment Form (logged in only) -->
+      <% if (locals.user) { %>
+        <form action="/blog/<%= blog._id %>/comment" method="POST" class="mb-10">
+          <div class="flex items-start gap-3">
+            <img
+              src="<%= user.profileImageURL || '/user.png' %>"
+              class="w-9 h-9 rounded-full object-cover border border-gray-200 flex-shrink-0 mt-1"
+            />
+            <div class="flex-1">
+              <textarea
+                name="content"
+                required
+                placeholder="Write a comment..."
+                rows="3"
+                class="w-full px-4 py-3 border border-gray-300 rounded text-sm outline-none focus:border-black transition resize-none"
+              ></textarea>
+              <div class="mt-2 flex justify-end">
+                <button type="submit"
+                  class="px-5 py-2 bg-black text-white text-sm rounded hover:bg-gray-800 transition">
+                  Post Comment
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+      <% } else { %>
+        <div class="mb-10 p-4 border border-gray-200 rounded text-sm text-gray-500 text-center">
+          <a href="/user/signin" class="text-black underline">Sign in</a> to leave a comment.
+        </div>
+      <% } %>
+
+      <!-- Comments List -->
+      <% if (comments.length > 0) { %>
+        <div class="space-y-6">
+          <% comments.forEach(comment => { %>
+            <div class="flex items-start gap-3">
+              <img
+                src="<%= comment.author?.profileImageURL || '/user.png' %>"
+                class="w-9 h-9 rounded-full object-cover border border-gray-200 flex-shrink-0"
+              />
+              <div class="flex-1">
+                <div class="flex items-center justify-between mb-1">
+                  <div class="flex items-center gap-2">
+                    <a href="/user/profile/<%= comment.author?._id %>"
+                      class="text-sm font-semibold hover:underline">
+                      <%= comment.author?.fullName || 'Anonymous' %>
+                    </a>
+                    <span class="text-xs text-gray-400">
+                      <%= new Date(comment.createdAt).toDateString() %>
+                    </span>
+                  </div>
+                  <!-- Delete (only comment author) -->
+                  <% if (locals.user && comment.author && user._id?.toString() === comment.author._id?.toString()) { %>
+                    <form action="/blog/<%= blog._id %>/comment/<%= comment._id %>/delete" method="POST"
+                      onsubmit="return confirm('Delete this comment?')">
+                      <button type="submit" class="text-xs text-red-400 hover:text-red-600 transition">
+                        Delete
+                      </button>
+                    </form>
+                  <% } %>
+                </div>
+                <p class="text-sm text-gray-700 leading-relaxed"><%= comment.content %></p>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      <% } else { %>
+        <div class="text-center py-10 text-gray-400">
+          <p class="text-sm">No comments yet. Be the first to comment!</p>
+        </div>
+      <% } %>
+
+    </div>
+
     <!-- Back Link -->
-    <div class="mt-10">
+    <div class="mt-12">
       <a href="/" class="text-sm text-gray-400 hover:text-black transition">← Back to all articles</a>
     </div>
 

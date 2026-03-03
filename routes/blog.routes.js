@@ -1,7 +1,7 @@
 import express from "express";
 import multer from "multer";
-import path from "path";
 import Blog from "../models/blog.model.js";
+import Comment from "../models/comment.model.js";
 import { requireAuth } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
@@ -25,12 +25,12 @@ router.get("/", async (req, res) => {
     .populate("author", "fullName")
     .sort({ createdAt: -1 });
 
-  res.render("home", { user: req.user || null, blogs });
+  res.render("home", { blogs });
 });
 
 // GET create post page (protected)
 router.get("/create", requireAuth, (req, res) => {
-  res.render("create", { user: req.user, blog: null, error: null });
+  res.render("create", { blog: null, error: null });
 });
 
 // POST create blog (protected)
@@ -49,18 +49,56 @@ router.post("/create", requireAuth, upload.single("coverImage"), async (req, res
     });
     res.redirect("/");
   } catch (error) {
-    res.status(400).render("create", { user: req.user, blog: null, error: error.message });
+    res.status(400).render("create", { blog: null, error: error.message });
   }
 });
 
-// GET single blog post
+// GET single blog post with comments
 router.get("/:id", async (req, res) => {
   try {
     const blog = await Blog.findById(req.params.id).populate("author", "fullName");
     if (!blog) return res.status(404).send("Blog not found");
-    res.render("blog", { user: req.user || null, blog });
+
+    const comments = await Comment.find({ blog: req.params.id })
+      .populate("author", "fullName profileImageURL")
+      .sort({ createdAt: -1 });
+
+    res.render("blog", { blog, comments });
   } catch {
     res.status(404).send("Blog not found");
+  }
+});
+
+// POST add comment (protected)
+router.post("/:id/comment", requireAuth, async (req, res) => {
+  const { content } = req.body;
+  try {
+    await Comment.create({
+      content,
+      blog: req.params.id,
+      author: req.user._id,
+    });
+    res.redirect(`/blog/${req.params.id}#comments`);
+  } catch (error) {
+    res.redirect(`/blog/${req.params.id}`);
+  }
+});
+
+// POST delete comment (protected)
+router.post("/:blogId/comment/:commentId/delete", requireAuth, async (req, res) => {
+  try {
+    const comment = await Comment.findById(req.params.commentId);
+    if (!comment) return res.status(404).send("Comment not found");
+
+    // Only author of comment can delete
+    if (comment.author.toString() !== req.user._id.toString()) {
+      return res.status(403).send("Unauthorized");
+    }
+
+    await Comment.findByIdAndDelete(req.params.commentId);
+    res.redirect(`/blog/${req.params.blogId}#comments`);
+  } catch {
+    res.status(500).send("Server error");
   }
 });
 
@@ -69,7 +107,7 @@ router.get("/:id/edit", requireAuth, async (req, res) => {
   try {
     const blog = await Blog.findById(req.params.id);
     if (!blog) return res.status(404).send("Blog not found");
-    res.render("create", { user: req.user, blog, error: null });
+    res.render("create", { blog, error: null });
   } catch {
     res.status(404).send("Blog not found");
   }
@@ -93,13 +131,15 @@ router.post("/:id/edit", requireAuth, upload.single("coverImage"), async (req, r
     await blog.save();
     res.redirect(`/blog/${blog._id}`);
   } catch (error) {
-    res.status(400).render("create", { user: req.user, blog: null, error: error.message });
+    res.status(400).render("create", { blog: null, error: error.message });
   }
 });
 
 // POST delete blog (protected)
 router.post("/:id/delete", requireAuth, async (req, res) => {
   await Blog.findByIdAndDelete(req.params.id);
+  // Also delete all comments for this blog
+  await Comment.deleteMany({ blog: req.params.id });
   res.redirect("/");
 });
 

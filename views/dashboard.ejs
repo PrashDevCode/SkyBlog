@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><%- include('partials/head') %></head>
+<body class="bg-white text-black">
+
+  <%- include('partials/navbar') %>
+
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 py-16">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-10">
+      <div>
+        <h1 class="text-3xl font-bold">My Dashboard</h1>
+        <p class="text-gray-400 text-sm mt-1">Manage all your blog posts</p>
+      </div>
+      <a href="/blog/create"
+        class="text-sm px-5 py-2 bg-black text-white rounded hover:bg-gray-800 transition">
+        + New Post
+      </a>
+    </div>
+
+    <!-- Stats Bar -->
+    <div class="grid grid-cols-3 gap-4 mb-10">
+      <div class="border border-gray-200 rounded p-5 text-center">
+        <p class="text-3xl font-bold"><%= totalBlogs %></p>
+        <p class="text-xs text-gray-400 mt-1 uppercase tracking-widest">Total</p>
+      </div>
+      <div class="border border-gray-200 rounded p-5 text-center">
+        <p class="text-3xl font-bold"><%= publishedBlogs %></p>
+        <p class="text-xs text-gray-400 mt-1 uppercase tracking-widest">Published</p>
+      </div>
+      <div class="border border-gray-200 rounded p-5 text-center">
+        <p class="text-3xl font-bold"><%= draftBlogs %></p>
+        <p class="text-xs text-gray-400 mt-1 uppercase tracking-widest">Drafts</p>
+      </div>
+    </div>
+
+    <!-- Filter Tabs -->
+    <div class="flex gap-4 border-b border-gray-200 mb-8">
+      <a href="/user/dashboard"
+        class="text-sm pb-3 px-1 <%= !filter || filter === 'all' ? 'border-b-2 border-black font-semibold' : 'text-gray-400 hover:text-black' %> transition">
+        All
+      </a>
+      <a href="/user/dashboard?filter=published"
+        class="text-sm pb-3 px-1 <%= filter === 'published' ? 'border-b-2 border-black font-semibold' : 'text-gray-400 hover:text-black' %> transition">
+        Published
+      </a>
+      <a href="/user/dashboard?filter=draft"
+        class="text-sm pb-3 px-1 <%= filter === 'draft' ? 'border-b-2 border-black font-semibold' : 'text-gray-400 hover:text-black' %> transition">
+        Drafts
+      </a>
+    </div>
+
+    <!-- Blog List -->
+    <% if (blogs.length > 0) { %>
+      <div class="space-y-4">
+        <% blogs.forEach(blog => { %>
+          <div class="flex items-start gap-4 p-5 border border-gray-200 rounded hover:shadow-sm transition group">
+
+            <!-- Cover Thumbnail -->
+            <div class="w-20 h-16 rounded overflow-hidden bg-gray-100 flex-shrink-0">
+              <% if (blog.coverImage) { %>
+                <img src="<%= blog.coverImage %>" class="w-full h-full object-cover" />
+              <% } else { %>
+                <div class="w-full h-full flex items-center justify-center text-gray-300 text-2xl">✍️</div>
+              <% } %>
+            </div>
+
+            <!-- Content -->
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 mb-1">
+                <% if (blog.category) { %>
+                  <span class="text-xs text-gray-400 uppercase tracking-widest"><%= blog.category %></span>
+                <% } %>
+                <% if (blog.status === 'draft') { %>
+                  <span class="text-xs px-2 py-0.5 bg-yellow-100 text-yellow-700 rounded">Draft</span>
+                <% } else { %>
+                  <span class="text-xs px-2 py-0.5 bg-green-100 text-green-700 rounded">Published</span>
+                <% } %>
+              </div>
+              <h3 class="text-sm font-semibold truncate"><%= blog.title %></h3>
+              <p class="text-xs text-gray-400 mt-1"><%= new Date(blog.createdAt).toDateString() %></p>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex items-center gap-2 flex-shrink-0">
+              <a href="/blog/<%= blog._id %>"
+                class="text-xs px-3 py-1.5 border border-gray-200 rounded hover:border-black transition">
+                View
+              </a>
+              <a href="/blog/<%= blog._id %>/edit"
+                class="text-xs px-3 py-1.5 border border-gray-200 rounded hover:border-black transition">
+                Edit
+              </a>
+              <form action="/blog/<%= blog._id %>/delete" method="POST"
+                onsubmit="return confirm('Delete this post?')">
+                <button type="submit"
+                  class="text-xs px-3 py-1.5 border border-red-200 text-red-400 rounded hover:bg-red-500 hover:text-white hover:border-red-500 transition">
+                  Delete
+                </button>
+              </form>
+            </div>
+
+          </div>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <div class="text-center py-24 text-gray-400">
+        <p class="text-5xl mb-4">📝</p>
+        <p class="text-lg font-medium text-gray-500">No posts found.</p>
+        <a href="/blog/create" class="text-black text-sm underline mt-2 inline-block">Write your first post</a>
+      </div>
+    <% } %>
+
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-gray-200 py-8 text-center text-xs text-gray-400">
+    © <%= new Date().getFullYear() %> SkyBlog. All rights reserved.
+  </footer>
+
+  <%- include('partials/scripts') %>
+</body>
+</html>

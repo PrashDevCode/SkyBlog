@@ -12,28 +12,28 @@
         <a href="/" class="hover:text-black transition">Home</a>
         <a href="/blog" class="hover:text-black transition">Blog</a>
         <a href="/blog/create" class="hover:text-black transition">Write</a>
+        <a href="/user/dashboard" class="hover:text-black transition">Dashboard</a>
       </div>
 
       <!-- Auth Buttons -->
       <div class="flex items-center gap-3">
         <% if (locals.user) { %>
-          <!-- Logged in: show avatar + signout -->
-          <span class="text-sm text-gray-600">Hi, <%= user.fullName %></span>
+          <a href="/user/profile/<%= user._id %>" class="text-sm text-gray-600 hover:text-black transition">
+            Hi, <%= user.fullName %>
+          </a>
           <a href="/user/signout"
             class="text-sm px-4 py-2 border border-black text-black rounded hover:bg-black hover:text-white transition">
             Sign Out
           </a>
-        <% } else { %>
-          <!-- Not logged in -->
-          <a href="/user/signin"
-            class="text-sm px-4 py-2 text-gray-700 hover:text-black transition">
-            Sign In
-          </a>
-          <a href="/user/signup"
-            class="text-sm px-4 py-2 bg-black text-white rounded hover:bg-gray-800 transition">
-            Get Started
-          </a>
-        <% } %>
+          <% } else { %>
+            <!-- Not logged in -->
+            <a href="/user/signin" class="text-sm px-4 py-2 text-gray-700 hover:text-black transition">
+              Sign In
+            </a>
+            <a href="/user/signup" class="text-sm px-4 py-2 bg-black text-white rounded hover:bg-gray-800 transition">
+              Get Started
+            </a>
+            <% } %>
       </div>
 
     </div>
