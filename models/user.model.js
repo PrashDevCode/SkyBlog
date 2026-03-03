@@ -30,8 +30,8 @@ const userSchema = new mongoose.Schema(
 );
 
 // Hash password BEFORE saving to DB
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next(); // only hash if password changed
+userSchema.pre("save", async function () {
+  if (!this.isModified("password")) return;
   this.password = await bcrypt.hash(this.password, 10);
 });
 
@@ -40,10 +40,15 @@ userSchema.methods.comparePassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
+// Static method to find user and verify password
 userSchema.statics.matchPassword = async function (email, enteredPassword) {
   const user = await this.findOne({ email });
-  if (!user) return false;
-  return await user.comparePassword(enteredPassword);
+  if (!user) throw new Error("User not found");
+
+  const isMatch = await user.comparePassword(enteredPassword);
+  if (!isMatch) throw new Error("Invalid password");
+
+  return user; // ✅ returns full user object
 };
 
 const User = mongoose.model("User", userSchema);

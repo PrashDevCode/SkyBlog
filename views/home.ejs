@@ -1,14 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
+<head><%- include('partials/head') %></head>
+<body class="bg-white text-black">
 
-<head>
-    <%- include("./partials/head.ejs") %>
-        <title>Homapage</title>
-</head>
+  <%- include('partials/navbar') %>
 
-<body>
-    <%- include("./partials/navbar.ejs") %>
-        <%- include("./partials/scripts.ejs") %>
+  <!-- HERO SECTION -->
+  <section class="border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
+      <p class="text-xs uppercase tracking-widest text-gray-400 mb-4">Welcome to SkyBlog</p>
+      <h1 class="text-5xl md:text-7xl font-bold text-black leading-tight mb-6">
+        Ideas Worth <br/> Reading.
+      </h1>
+      <p class="text-gray-500 text-lg max-w-xl mx-auto mb-10">
+        A space for thoughtful writing on technology, design, culture, and everything in between.
+      </p>
+
+      <!-- Search Bar -->
+      <form action="/blog/search" method="GET" class="flex items-center max-w-lg mx-auto border border-gray-300 rounded overflow-hidden focus-within:border-black transition">
+        <input
+          type="text"
+          name="q"
+          placeholder="Search articles..."
+          class="flex-1 px-5 py-3 text-sm outline-none bg-white"
+        />
+        <button type="submit" class="px-5 py-3 bg-black text-white text-sm hover:bg-gray-800 transition">
+          Search
+        </button>
+      </form>
+    </div>
+  </section>
+
+  <!-- CATEGORIES FILTER -->
+  <section class="border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex gap-3 flex-wrap">
+      <% const categories = ['All', 'Technology', 'Design', 'Culture', 'Business', 'Science']; %>
+      <% categories.forEach(cat => { %>
+        <a href="/blog?category=<%= cat %>"
+          class="text-xs px-4 py-2 border border-gray-300 rounded-full hover:bg-black hover:text-white hover:border-black transition capitalize">
+          <%= cat %>
+        </a>
+      <% }) %>
+    </div>
+  </section>
+
+  <!-- BLOG CARDS GRID -->
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <h2 class="text-2xl font-bold mb-10">Latest Articles</h2>
+
+    <% if (locals.blogs && blogs.length > 0) { %>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <% blogs.forEach(blog => { %>
+          <a href="/blog/<%= blog._id %>" class="group border border-gray-200 rounded overflow-hidden hover:shadow-md transition">
+            <!-- Cover Image -->
+            <div class="h-48 bg-gray-100 overflow-hidden">
+              <% if (blog.coverImage) { %>
+                <img src="<%= blog.coverImage %>" alt="<%= blog.title %>"
+                  class="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
+              <% } else { %>
+                <div class="w-full h-full flex items-center justify-center text-gray-300 text-4xl">✍️</div>
+              <% } %>
+            </div>
+            <!-- Card Content -->
+            <div class="p-5">
+              <% if (blog.category) { %>
+                <span class="text-xs uppercase tracking-widest text-gray-400"><%= blog.category %></span>
+              <% } %>
+              <h3 class="text-lg font-semibold mt-1 mb-2 group-hover:underline"><%= blog.title %></h3>
+              <p class="text-sm text-gray-500 line-clamp-2"><%= blog.excerpt || blog.content?.substring(0, 100) %>...</p>
+              <div class="mt-4 flex items-center gap-2 text-xs text-gray-400">
+                <span><%= blog.author?.fullName || 'Anonymous' %></span>
+                <span>·</span>
+                <span><%= new Date(blog.createdAt).toDateString() %></span>
+              </div>
+            </div>
+          </a>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <!-- Empty state -->
+      <div class="text-center py-24 text-gray-400">
+        <p class="text-5xl mb-4">📝</p>
+        <p class="text-lg font-medium text-gray-500">No articles yet.</p>
+        <p class="text-sm mt-1">Be the first to <a href="/blog/create" class="underline text-black">write something</a>.</p>
+      </div>
+    <% } %>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-gray-200 py-8 text-center text-xs text-gray-400">
+    © <%= new Date().getFullYear() %> SkyBlog. All rights reserved.
+  </footer>
+
+  <%- include('partials/scripts') %>
 </body>
-
 </html>
