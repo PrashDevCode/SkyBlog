@@ -3,19 +3,14 @@
 
 <head>
     <%- include("./partials/head.ejs") %>
-        <title>Signup</title>
+        <title>Signin</title>
 </head>
 
 <body>
     <%- include("./partials/navbar.ejs") %>
 
         <div class="container mt-4">
-            <form action="/user/signup" method="post">
-                <div class="mb-3">
-                    <label for="fullNameInput" class="form-label">Full Name</label>
-                    <input type="text" class="form-control" id="fullNameInput" name="fullName" aria-describedby="fullNameHelp">
-                    <div id="fullNameHelp" name="fullName" class="form-text">write your full name.</div>
-                </div>
+            <form action="/user/signin" method="post">
                 <div class="mb-3">
                     <label for="emailInput" class="form-label">Email address</label>
                     <input type="email" class="form-control" id="emailInput" name="email" aria-describedby="emailHelp">
