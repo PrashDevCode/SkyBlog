@@ -1,0 +1,75 @@
+<%- include('../partials/admin-layout-top', { pageTitle: 'Manage Blogs' }) %>
+
+    <div class="flex items-center justify-between mb-6">
+      <!-- Filter Tabs -->
+      <div class="flex gap-4 border-b border-gray-200 w-full">
+        <a href="/admin/blogs"
+          class="text-sm pb-3 px-1 <%= filter === 'all' ? 'border-b-2 border-black font-semibold' : 'text-gray-400 hover:text-black' %> transition">
+          All
+        </a>
+        <a href="/admin/blogs?status=published"
+          class="text-sm pb-3 px-1 <%= filter === 'published' ? 'border-b-2 border-black font-semibold' : 'text-gray-400 hover:text-black' %> transition">
+          Published
+        </a>
+        <a href="/admin/blogs?status=draft"
+          class="text-sm pb-3 px-1 <%= filter === 'draft' ? 'border-b-2 border-black font-semibold' : 'text-gray-400 hover:text-black' %> transition">
+          Drafts
+        </a>
+        <span class="ml-auto text-sm text-gray-400 pb-3"><%= blogs.length %> posts</span>
+      </div>
+    </div>
+
+    <div class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+      <table class="w-full text-sm">
+        <thead class="border-b border-gray-200 bg-gray-50">
+          <tr>
+            <th class="text-left px-6 py-3 text-xs uppercase tracking-widest text-gray-400 font-medium">Title</th>
+            <th class="text-left px-6 py-3 text-xs uppercase tracking-widest text-gray-400 font-medium">Author</th>
+            <th class="text-left px-6 py-3 text-xs uppercase tracking-widest text-gray-400 font-medium">Category</th>
+            <th class="text-left px-6 py-3 text-xs uppercase tracking-widest text-gray-400 font-medium">Status</th>
+            <th class="text-left px-6 py-3 text-xs uppercase tracking-widest text-gray-400 font-medium">Date</th>
+            <th class="text-left px-6 py-3 text-xs uppercase tracking-widest text-gray-400 font-medium">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+          <% blogs.forEach(blog => { %>
+            <tr class="hover:bg-gray-50 transition">
+              <td class="px-6 py-4 max-w-xs">
+                <a href="/blog/<%= blog._id %>" class="font-medium hover:underline truncate block">
+                  <%= blog.title %>
+                </a>
+              </td>
+              <td class="px-6 py-4 text-gray-500"><%= blog.author?.fullName || 'Unknown' %></td>
+              <td class="px-6 py-4 text-gray-500"><%= blog.category %></td>
+              <td class="px-6 py-4">
+                <span class="text-xs px-2 py-0.5 rounded-full
+                  <%= blog.status === 'published' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700' %>">
+                  <%= blog.status %>
+                </span>
+              </td>
+              <td class="px-6 py-4 text-gray-400 text-xs"><%= new Date(blog.createdAt).toDateString() %></td>
+              <td class="px-6 py-4">
+                <div class="flex items-center gap-3">
+                  <form action="/admin/blogs/<%= blog._id %>/status" method="POST">
+                    <button type="submit" class="text-xs text-gray-500 hover:text-black underline transition">
+                      <%= blog.status === 'published' ? 'Unpublish' : 'Publish' %>
+                    </button>
+                  </form>
+                  <form action="/admin/blogs/<%= blog._id %>/delete" method="POST"
+                    onsubmit="return confirm('Delete this blog post?')">
+                    <button type="submit" class="text-xs text-red-400 hover:text-red-600 transition">Delete</button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+
+      </main>
+    </div>
+  </div>
+<%- include('../partials/scripts') %>
+</body>
+</html>

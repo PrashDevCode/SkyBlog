@@ -1,5 +1,6 @@
 import 'dotenv/config';
 
+import adminRoutes from './routes/admin.routes.js';
 import express from 'express';
 import mongoose from 'mongoose';
 import path from 'path';
@@ -21,15 +22,16 @@ app.set("views", path.resolve("./views"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
+app.use("/admin", adminRoutes);
 
-// ✅ Global middleware — attach user to every request & view
+// Global middleware — attach user to every request & view
 app.use((req, res, next) => {
   const token = req.cookies?.token;
   if (token) {
     try {
       const user = verifyToken(token);
       req.user = user;
-      res.locals.user = user; // ✅ makes `user` available in ALL ejs views
+      res.locals.user = user;
     } catch {
       req.user = null;
       res.locals.user = null;
@@ -44,13 +46,23 @@ app.use((req, res, next) => {
 app.use("/user", userRoutes);
 app.use("/blog", blogRoutes);
 
-// Home route
+// Home route with search & category filter
 app.get("/", async (req, res) => {
-  const blogs = await Blog.find({ status: "published" })
+  const { category, q } = req.query;
+
+  const filter = { status: "published" };
+  if (category && category !== "All") filter.category = category;
+  if (q) filter.title = { $regex: q, $options: "i" };
+
+  const blogs = await Blog.find(filter)
     .populate("author", "fullName")
     .sort({ createdAt: -1 });
-    console.log("Published blogs found:", blogs.length);
-  res.render("home", { blogs });
+
+  res.render("home", {
+    blogs,
+    activeCategory: category || "All",
+    searchQuery: q || "",
+  });
 });
 
 app.listen(process.env.PORT, () => {

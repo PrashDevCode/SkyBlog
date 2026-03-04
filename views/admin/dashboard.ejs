@@ -1,0 +1,87 @@
+<%- include('../partials/admin-layout-top', { pageTitle: 'Dashboard' }) %>
+
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-10">
+      <div class="bg-white border border-gray-200 rounded-lg p-5 text-center shadow-sm">
+        <p class="text-3xl font-bold text-gray-900"><%= totalUsers %></p>
+        <p class="text-xs text-gray-400 mt-1 uppercase tracking-widest">Users</p>
+      </div>
+      <div class="bg-white border border-gray-200 rounded-lg p-5 text-center shadow-sm">
+        <p class="text-3xl font-bold text-gray-900"><%= totalBlogs %></p>
+        <p class="text-xs text-gray-400 mt-1 uppercase tracking-widest">Total Posts</p>
+      </div>
+      <div class="bg-white border border-gray-200 rounded-lg p-5 text-center shadow-sm">
+        <p class="text-3xl font-bold text-green-600"><%= publishedBlogs %></p>
+        <p class="text-xs text-gray-400 mt-1 uppercase tracking-widest">Published</p>
+      </div>
+      <div class="bg-white border border-gray-200 rounded-lg p-5 text-center shadow-sm">
+        <p class="text-3xl font-bold text-yellow-500"><%= draftBlogs %></p>
+        <p class="text-xs text-gray-400 mt-1 uppercase tracking-widest">Drafts</p>
+      </div>
+      <div class="bg-white border border-gray-200 rounded-lg p-5 text-center shadow-sm">
+        <p class="text-3xl font-bold text-blue-600"><%= totalComments %></p>
+        <p class="text-xs text-gray-400 mt-1 uppercase tracking-widest">Comments</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+      <!-- Recent Users -->
+      <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+        <div class="flex items-center justify-between mb-5">
+          <h2 class="text-base font-bold">Recent Users</h2>
+          <a href="/admin/users" class="text-xs text-gray-400 hover:text-black underline">View all</a>
+        </div>
+        <div class="space-y-4">
+          <% recentUsers.forEach(u => { %>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <img src="<%= u.profileImageURL || '/user.png' %>"
+                  class="w-9 h-9 rounded-full object-cover border border-gray-200" />
+                <div>
+                  <p class="text-sm font-medium"><%= u.fullName %></p>
+                  <p class="text-xs text-gray-400"><%= u.email %></p>
+                </div>
+              </div>
+              <span class="text-xs px-2 py-0.5 rounded-full border border-gray-200 capitalize text-gray-500">
+                <%= u.role %>
+              </span>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+
+      <!-- Recent Blogs -->
+      <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+        <div class="flex items-center justify-between mb-5">
+          <h2 class="text-base font-bold">Recent Posts</h2>
+          <a href="/admin/blogs" class="text-xs text-gray-400 hover:text-black underline">View all</a>
+        </div>
+        <div class="space-y-4">
+          <% recentBlogs.forEach(blog => { %>
+            <div class="flex items-center justify-between">
+              <div class="flex-1 min-w-0 pr-4">
+                <a href="/blog/<%= blog._id %>" class="text-sm font-medium hover:underline truncate block">
+                  <%= blog.title %>
+                </a>
+                <p class="text-xs text-gray-400 mt-0.5">
+                  <%= blog.author?.fullName %> · <%= new Date(blog.createdAt).toDateString() %>
+                </p>
+              </div>
+              <span class="text-xs px-2 py-0.5 rounded-full flex-shrink-0
+                <%= blog.status === 'published' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700' %>">
+                <%= blog.status %>
+              </span>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+
+    </div>
+
+      </main>
+    </div>
+  </div>
+<%- include('../partials/scripts') %>
+</body>
+</html>

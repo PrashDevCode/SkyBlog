@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><%- include('../partials/head') %>
+<style>
+  .admin-sidebar a.active { background: rgba(255,255,255,0.1); }
+</style>
+</head>
+<body class="bg-gray-100 text-black min-h-screen">
+
+  <div class="flex min-h-screen">
+
+    <!-- SIDEBAR -->
+    <aside class="w-64 bg-gray-900 text-white flex flex-col fixed h-full z-40">
+
+      <!-- Logo -->
+      <div class="px-6 py-5 border-b border-gray-700">
+        <a href="/" class="text-xl font-bold" style="font-family:'Playfair Display',serif;">
+          Sky<span class="text-gray-400">Blog</span>
+        </a>
+        <p class="text-xs text-gray-500 mt-1">Admin Panel</p>
+      </div>
+
+      <!-- Nav -->
+      <nav class="flex-1 px-4 py-6 space-y-1 admin-sidebar">
+        <a href="/admin"
+          class="flex items-center gap-3 px-3 py-2.5 rounded text-sm text-gray-300 hover:bg-white/10 hover:text-white transition">
+          <span>📊</span> Dashboard
+        </a>
+        <a href="/admin/users"
+          class="flex items-center gap-3 px-3 py-2.5 rounded text-sm text-gray-300 hover:bg-white/10 hover:text-white transition">
+          <span>👥</span> Users
+        </a>
+        <a href="/admin/blogs"
+          class="flex items-center gap-3 px-3 py-2.5 rounded text-sm text-gray-300 hover:bg-white/10 hover:text-white transition">
+          <span>📝</span> Blog Posts
+        </a>
+        <a href="/admin/comments"
+          class="flex items-center gap-3 px-3 py-2.5 rounded text-sm text-gray-300 hover:bg-white/10 hover:text-white transition">
+          <span>💬</span> Comments
+        </a>
+      </nav>
+
+      <!-- Bottom -->
+      <div class="px-4 py-5 border-t border-gray-700 space-y-2">
+        <a href="/"
+          class="flex items-center gap-3 px-3 py-2.5 rounded text-sm text-gray-400 hover:bg-white/10 hover:text-white transition">
+          <span>🌐</span> View Site
+        </a>
+        <a href="/user/signout"
+          class="flex items-center gap-3 px-3 py-2.5 rounded text-sm text-gray-400 hover:bg-white/10 hover:text-white transition">
+          <span>🚪</span> Sign Out
+        </a>
+      </div>
+
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <div class="flex-1 ml-64">
+
+      <!-- Top Bar -->
+      <header class="bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between">
+        <h1 class="text-lg font-semibold"><%= typeof pageTitle !== 'undefined' ? pageTitle : 'Dashboard' %></h1>
+        <div class="flex items-center gap-3">
+          <img src="<%= locals.user?.profileImageURL || '/user.png' %>"
+            class="w-8 h-8 rounded-full object-cover border border-gray-200" />
+          <div>
+            <p class="text-sm font-medium"><%= locals.user?.fullName %></p>
+            <p class="text-xs text-gray-400 capitalize"><%= locals.user?.role %></p>
+          </div>
+        </div>
+      </header>
+
+      <!-- Page Content -->
+      <main class="p-8">
