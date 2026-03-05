@@ -1,0 +1,63 @@
+<%- include('../partials/admin-layout-top', { pageTitle: 'Manage Comments' }) %>
+
+    <div class="flex items-center justify-between mb-6">
+      <p class="text-sm text-gray-400"><%= comments.length %> total comments</p>
+    </div>
+
+    <div class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+      <table class="w-full text-sm">
+        <thead class="border-b border-gray-200 bg-gray-50">
+          <tr>
+            <th class="text-left px-6 py-3 text-xs uppercase tracking-widest text-gray-400 font-medium">Comment</th>
+            <th class="text-left px-6 py-3 text-xs uppercase tracking-widest text-gray-400 font-medium">Author</th>
+            <th class="text-left px-6 py-3 text-xs uppercase tracking-widest text-gray-400 font-medium">Blog Post</th>
+            <th class="text-left px-6 py-3 text-xs uppercase tracking-widest text-gray-400 font-medium">Date</th>
+            <th class="text-left px-6 py-3 text-xs uppercase tracking-widest text-gray-400 font-medium">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+          <% if (comments.length > 0) { %>
+            <% comments.forEach(comment => { %>
+              <tr class="hover:bg-gray-50 transition">
+                <td class="px-6 py-4 max-w-xs">
+                  <p class="text-sm text-gray-700 truncate"><%= comment.content %></p>
+                </td>
+                <td class="px-6 py-4">
+                  <p class="text-sm font-medium"><%= comment.author?.fullName || 'Unknown' %></p>
+                  <p class="text-xs text-gray-400"><%= comment.author?.email %></p>
+                </td>
+                <td class="px-6 py-4">
+                  <a href="/blog/<%= comment.blog?._id %>" class="text-sm hover:underline text-gray-700 truncate block max-w-xs">
+                    <%= comment.blog?.title || 'Deleted post' %>
+                  </a>
+                </td>
+                <td class="px-6 py-4 text-xs text-gray-400">
+                  <%= new Date(comment.createdAt).toDateString() %>
+                </td>
+                <td class="px-6 py-4">
+                  <form action="/admin/comments/<%= comment._id %>/delete" method="POST"
+                    onsubmit="return confirm('Delete this comment?')">
+                    <button type="submit" class="text-xs text-red-400 hover:text-red-600 transition">
+                      Delete
+                    </button>
+                  </form>
+                </td>
+              </tr>
+            <% }) %>
+          <% } else { %>
+            <tr>
+              <td colspan="5" class="px-6 py-16 text-center text-gray-400 text-sm">
+                No comments yet.
+              </td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+
+      </main>
+    </div>
+  </div>
+<%- include('../partials/scripts') %>
+</body>
+</html>

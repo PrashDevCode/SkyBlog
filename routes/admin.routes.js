@@ -96,4 +96,19 @@ router.post("/blogs/:id/delete", requireAdmin, async (req, res) => {
   }
 });
 
+// GET all comments
+router.get("/comments", requireAdmin, async (req, res) => {
+  const comments = await Comment.find()
+    .populate("author", "fullName email")
+    .populate("blog", "title")
+    .sort({ createdAt: -1 });
+  res.render("admin/comments", { comments });
+});
+
+// POST delete comment
+router.post("/comments/:id/delete", requireAdmin, async (req, res) => {
+  await Comment.findByIdAndDelete(req.params.id);
+  res.redirect("/admin/comments");
+});
+
 export default router;

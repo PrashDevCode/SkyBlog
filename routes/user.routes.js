@@ -4,10 +4,10 @@ import User from "../models/user.model.js";
 import Blog from "../models/blog.model.js";
 import { createTokenForUser } from "../services/auth.js";
 import { requireAuth } from "../middleware/auth.middleware.js";
+import { sendWelcomeEmail } from "../services/email.service.js";
 
 const router = express.Router();
 
-// Multer for profile image
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, "public/uploads/"),
   filename: (req, file, cb) => cb(null, `${Date.now()}-${file.originalname}`),
@@ -31,23 +31,27 @@ router.post("/signin", async (req, res) => {
 
 router.post("/signup", async (req, res) => {
   const { fullName, email, password } = req.body;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return res.status(400).render("signup", { error: "Invalid email address" });
+  }
+
   try {
     const user = await User.create({ fullName, email, password });
     const token = createTokenForUser(user);
     res.cookie("token", token, { httpOnly: true, maxAge: 60 * 60 * 1000 });
+    sendWelcomeEmail(user); // ✅ Brevo welcome email (non-blocking)
     return res.redirect("/");
   } catch (error) {
     return res.status(400).render("signup", { error: error.message });
   }
 });
 
-// Sign out
 router.get("/signout", (req, res) => {
   res.clearCookie("token");
   return res.redirect("/");
 });
 
-// GET dashboard (protected)
 router.get("/dashboard", requireAuth, async (req, res) => {
   const { filter } = req.query;
   const query = { author: req.user._id };
@@ -70,7 +74,6 @@ router.get("/dashboard", requireAuth, async (req, res) => {
   });
 });
 
-// GET profile page
 router.get("/profile/:id", async (req, res) => {
   try {
     const profileUser = await User.findById(req.params.id).select("-password");
@@ -95,25 +98,29 @@ router.get("/profile/:id", async (req, res) => {
   }
 });
 
-// POST update profile
-router.post("/profile/update", requireAuth, upload.single("profileImage"), async (req, res) => {
-  try {
-    const { fullName } = req.body;
-    const updateData = { fullName };
-    if (req.file) updateData.profileImageURL = `/uploads/${req.file.filename}`;
+router.post(
+  "/profile/update",
+  requireAuth,
+  upload.single("profileImage"),
+  async (req, res) => {
+    try {
+      const { fullName } = req.body;
+      const updateData = { fullName };
+      if (req.file)
+        updateData.profileImageURL = `/uploads/${req.file.filename}`;
 
-    const updatedUser = await User.findByIdAndUpdate(
-      req.user._id,
-      updateData,
-      { new: true }
-    );
-
-    const token = createTokenForUser(updatedUser);
-    res.cookie("token", token, { httpOnly: true, maxAge: 60 * 60 * 1000 });
-    res.redirect(`/user/profile/${req.user._id}`);
-  } catch (error) {
-    res.status(500).send("Failed to update profile");
-  }
-});
+      const updatedUser = await User.findByIdAndUpdate(
+        req.user._id,
+        updateData,
+        { new: true },
+      );
+      const token = createTokenForUser(updatedUser);
+      res.cookie("token", token, { httpOnly: true, maxAge: 60 * 60 * 1000 });
+      res.redirect(`/user/profile/${req.user._id}`);
+    } catch (error) {
+      res.status(500).send("Failed to update profile");
+    }
+  },
+);
 
 export default router;
